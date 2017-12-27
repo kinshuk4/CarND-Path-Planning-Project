@@ -242,7 +242,7 @@ int main() {
           	vector<double> next_x_vals;
           	vector<double> next_y_vals;
 
-			double dist_inc = 0.5;
+			double dist_inc = 0.3;
 			for(int i = 0; i < 50; i++)
 			{
 				double next_s = car_s + (i+1) * dist_inc;
