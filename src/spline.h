@@ -31,8 +31,9 @@
 #include <cassert>
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
-
+using namespace std;
 // unnamed namespace only because the implementation is in this
 // header file and we don't want to export symbols to the obj files
 namespace
@@ -292,6 +293,7 @@ void spline::set_points(const std::vector<double>& x,
     // TODO: maybe sort x and y, rather than returning an error
     for(int i=0; i<n-1; i++) {
         assert(m_x[i]<m_x[i+1]);
+
     }
 
     if(cubic_spline==true) { // cubic spline interpolation
