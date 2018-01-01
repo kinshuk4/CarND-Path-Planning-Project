@@ -171,7 +171,8 @@ int main() {
     // The max s value before wrapping around the track back to 0
     double max_s = 6945.554;
     ifstream in_map_(map_file_.c_str(), ifstream::in);
-    int lane = 1;//lane 0 is far left, lane 1 is middle and we start with lane 1
+
+
     string line;
     while (getline(in_map_, line)) {
         istringstream iss(line);
@@ -200,6 +201,8 @@ int main() {
         // The 2 signifies a websocket event
         //auto sdata = string(data).substr(0, length);
         //cout << sdata << endl;
+        int lane = 1;//lane 0 is far left, lane 1 is middle and we start with lane 1
+        double ref_vel = 49.5;
         if (length && length > 2 && data[0] == '4' && data[1] == '2') {
 
             auto s = hasData(data);
@@ -231,6 +234,34 @@ int main() {
                     auto sensor_fusion = j[1]["sensor_fusion"];
 
                     int prev_size = previous_path_x.size();
+
+                    // Check if the car in front is too close
+                    bool too_close = false;
+
+                    for (int i = 0; i < sensor_fusion.size(); i++) {
+                        float d = sensor_fusion[i][6];
+
+                        // Check the if there is a car in in the same lane
+                        int double_d_1 = 2 + 4 * lane;
+                        if ((d < double_d_1 + 2) && (d > double_d_1 - 2)) {
+                            // Get car velocity
+                            double vx = sensor_fusion[i][3];
+                            double vy = sensor_fusion[i][4];
+                            double check_speed = sqrt(vx * vx + vy * vy);//get magnitude of velocity i.e. speed
+
+                            // Check the s value of the car in the same lane - how close is the car?
+                            double check_car_s = sensor_fusion[i][5];
+
+                            //project s value in time using prev path points assuming constant speed
+                            check_car_s += double(prev_size) * 0.02 * check_speed;
+
+                            // Check if this car is in front and too close to us using previous values
+                            if ((check_car_s > car_s) && ((check_car_s - end_path_s) < 30)) {
+                                ref_vel = 29.5;//mph - reduce the speed
+                                //too_close = true; // The car in front is dangerously close
+                            }
+                        }
+                    }
 
                     json msgJson;
 
@@ -314,7 +345,7 @@ int main() {
                     double x_add_on = 0;
 
                     for (int i = 0; i <= 50 - previous_path_x.size(); i++) {
-                        double N = (target_dist / (.02 * REF_VAL / 2.24));//2.24 is in m/s
+                        double N = (target_dist / (.02 * ref_vel / 2.24));//2.24 is in m/s
                         double x_point = x_add_on + (target_x) / N;
                         double y_point = s(x_point);
 
