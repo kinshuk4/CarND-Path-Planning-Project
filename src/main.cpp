@@ -193,7 +193,10 @@ int main() {
         map_waypoints_dy.push_back(d_y);
     }
 
-    h.onMessage([&map_waypoints_x, &map_waypoints_y, &map_waypoints_s, &map_waypoints_dx, &map_waypoints_dy](
+    int lane = 1;//lane 0 is far left, lane 1 is middle and we start with lane 1
+    double ref_vel = 49.5;
+
+    h.onMessage([&ref_vel, &map_waypoints_x, &map_waypoints_y, &map_waypoints_s, &map_waypoints_dx, &map_waypoints_dy, &lane](
             uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
             uWS::OpCode opCode) {
         // "42" at the start of the message means there's a websocket message event.
@@ -201,8 +204,7 @@ int main() {
         // The 2 signifies a websocket event
         //auto sdata = string(data).substr(0, length);
         //cout << sdata << endl;
-        int lane = 1;//lane 0 is far left, lane 1 is middle and we start with lane 1
-        double ref_vel = 49.5;
+
         if (length && length > 2 && data[0] == '4' && data[1] == '2') {
 
             auto s = hasData(data);
