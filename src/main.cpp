@@ -194,7 +194,7 @@ int main() {
     }
 
     int lane = 1;//lane 0 is far left, lane 1 is middle and we start with lane 1
-    double ref_vel = 49.5;
+    double ref_vel = INITIAL_VEL;
 
     h.onMessage([&ref_vel, &map_waypoints_x, &map_waypoints_y, &map_waypoints_s, &map_waypoints_dx, &map_waypoints_dy, &lane](
             uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
@@ -263,6 +263,13 @@ int main() {
                                 //too_close = true; // The car in front is dangerously close
                             }
                         }
+                    }
+
+                    if(too_close) {
+                        ref_vel -= ACCELERATION;
+                    }
+                    else if(ref_vel < MAX_VEL) {
+                        ref_vel += ACCELERATION;
                     }
 
                     json msgJson;
