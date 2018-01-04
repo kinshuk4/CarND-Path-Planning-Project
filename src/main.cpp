@@ -236,6 +236,10 @@ int main() {
                     auto sensor_fusion = j[1]["sensor_fusion"];
 
                     int prev_size = previous_path_x.size();
+                    
+                    if(prev_size > 0) {
+                        car_s = end_path_s;
+                    }
 
                     // Check if the car in front is too close
                     bool too_close = false;
