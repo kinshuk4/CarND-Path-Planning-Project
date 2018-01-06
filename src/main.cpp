@@ -236,7 +236,7 @@ int main() {
                     auto sensor_fusion = j[1]["sensor_fusion"];
 
                     int prev_size = previous_path_x.size();
-                    
+
                     if(prev_size > 0) {
                         car_s = end_path_s;
                     }
@@ -263,8 +263,8 @@ int main() {
 
                             // Check if this car is in front and too close to us using previous values
                             if ((check_car_s > car_s) && ((check_car_s - end_path_s) < 30)) {
-                                ref_vel = 29.5;//mph - reduce the speed
-                                //too_close = true; // The car in front is dangerously close
+                                //ref_vel = 29.5;//mph - reduce the speed
+                                too_close = true; // The car in front is dangerously close
                             }
                         }
                     }
