@@ -265,6 +265,10 @@ int main() {
                             if ((check_car_s > car_s) && ((check_car_s - end_path_s) < 30)) {
                                 //ref_vel = 29.5;//mph - reduce the speed
                                 too_close = true; // The car in front is dangerously close
+                                //change to left lane when some car is infront - risky
+                                if(lane > 0){
+                                    lane = 0;
+                                }
                             }
                         }
                     }
