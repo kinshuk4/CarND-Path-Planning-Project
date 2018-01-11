@@ -155,7 +155,10 @@ getXY(double s, double d, const vector<double> &maps_s, const vector<double> &ma
     return {x, y};
 
 }
-
+bool check_lane(int laneNumber){
+    double d = 2+ LANE_WIDTH * laneNumber;
+    return false;
+}
 int main() {
     uWS::Hub h;
 
@@ -249,7 +252,9 @@ int main() {
 
                         // Check the if there is a car in in the same lane
                         int double_d_1 = 2 + 4 * lane;
-                        if ((d < double_d_1 + 2) && (d > double_d_1 - 2)) {
+                        bool can_change_left = (d > double_d_1 - 2);
+                        bool can_change_right = (d < double_d_1 + 2);
+                        if (can_change_right && can_change_left) {
                             // Get car velocity
                             double vx = sensor_fusion[i][3];
                             double vy = sensor_fusion[i][4];
@@ -262,19 +267,23 @@ int main() {
                             check_car_s += double(prev_size) * 0.02 * check_speed;
 
                             // Check if this car is in front and too close to us using previous values
-                            if ((check_car_s > car_s) && ((check_car_s - end_path_s) < 30)) {
+                            if ((check_car_s > car_s) && ((check_car_s - end_path_s) < SAFETY_MARGIN)) {
                                 //ref_vel = 29.5;//mph - reduce the speed
                                 too_close = true; // The car in front is dangerously close
                                 //change to left lane when some car is infront - risky
-                                if(lane > 0){
-                                    lane = 0;
-                                }
+//                                if(lane > 0){
+//                                    lane = 0;
+//                                }
                             }
                         }
                     }
 
+                    LaneDecision laneDecision = KEEP_LANE;
+
                     if(too_close) {
                         ref_vel -= ACCELERATION;
+                        //only when too close we have to change the lane
+
                     }
                     else if(ref_vel < MAX_VEL) {
                         ref_vel += ACCELERATION;
