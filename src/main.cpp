@@ -246,14 +246,16 @@ int main() {
 
                     // Check if the car in front is too close
                     bool too_close = false;
+                    bool can_change_left = false;
+                    bool can_change_right = false;
 
                     for (int i = 0; i < sensor_fusion.size(); i++) {
                         float d = sensor_fusion[i][6];
 
                         // Check the if there is a car in in the same lane
                         int double_d_1 = 2 + 4 * lane;
-                        bool can_change_left = (d > double_d_1 - 2);
-                        bool can_change_right = (d < double_d_1 + 2);
+                        can_change_left = (d > double_d_1 - 2);
+                        can_change_right = (d < double_d_1 + 2);
                         if (can_change_right && can_change_left) {
                             // Get car velocity
                             double vx = sensor_fusion[i][3];
@@ -281,8 +283,26 @@ int main() {
                     LaneDecision laneDecision = KEEP_LANE;
 
                     if(too_close) {
-                        ref_vel -= ACCELERATION;
+
                         //only when too close we have to change the lane
+                        //first try to see if can go right
+                        if(can_change_right && lane!=MIN_LANE){
+                            laneDecision = TAKE_RIGHT;
+                        }else if(can_change_left && lane!=MAX_LANE){
+                            laneDecision = TAKE_LEFT;
+                        }
+
+                        switch(laneDecision){
+                            case KEEP_LANE:
+                                ref_vel -= ACCELERATION;
+                                break;
+                            case TAKE_RIGHT:
+                                lane = lane - 1;
+                                break;
+                            case TAKE_LEFT:
+                                lane = lane + 1;
+                                break;
+                        }
 
                     }
                     else if(ref_vel < MAX_VEL) {
