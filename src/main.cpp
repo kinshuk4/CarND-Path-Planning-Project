@@ -246,17 +246,17 @@ int main() {
 
                     // Check if the car in front is too close
                     bool too_close = false;
-                    bool can_change_left = false;
-                    bool can_change_right = false;
+                    bool left_gap_check = false;
+                    bool right_gap_check = false;
 
                     for (int i = 0; i < sensor_fusion.size(); i++) {
                         float d = sensor_fusion[i][6];
 
                         // Check the if there is a car in in the same lane
                         int double_d_1 = 2 + 4 * lane;
-                        can_change_left = (d > double_d_1 - 2);
-                        can_change_right = (d < double_d_1 + 2);
-                        if (can_change_right && can_change_left) {
+                        left_gap_check = (d > double_d_1 - 2);
+                        right_gap_check = (d < double_d_1 + 2);
+                        if (right_gap_check && left_gap_check) {
                             // Get car velocity
                             double vx = sensor_fusion[i][3];
                             double vy = sensor_fusion[i][4];
@@ -286,9 +286,9 @@ int main() {
 
                         //only when too close we have to change the lane
                         //first try to see if can go right
-                        if(can_change_right && lane!=MIN_LANE){
+                        if( !(!right_gap_check || lane==MAX_LANE)){
                             laneDecision = TAKE_RIGHT;
-                        }else if(can_change_left && lane!=MAX_LANE){
+                        }else if( !(!left_gap_check || lane==MIN_LANE)){
                             laneDecision = TAKE_LEFT;
                         }
 
@@ -297,10 +297,10 @@ int main() {
                                 ref_vel -= ACCELERATION;
                                 break;
                             case TAKE_RIGHT:
-                                lane = lane - 1;
+                                lane = lane + 1;
                                 break;
                             case TAKE_LEFT:
-                                lane = lane + 1;
+                                lane = lane - 1;
                                 break;
                         }
 
