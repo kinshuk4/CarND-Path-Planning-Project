@@ -10,6 +10,7 @@
 #include "spline.h"
 #include "constants.h"
 #include "coordinate_utils.h"
+#include "way_points_map.h"
 
 using namespace std;
 
@@ -38,44 +39,20 @@ string hasData(string s) {
 int main() {
     uWS::Hub h;
 
-    // Load up map values for waypoint's x,y,s and d normalized normal vectors
-    vector<double> map_waypoints_x;
-    vector<double> map_waypoints_y;
-    vector<double> map_waypoints_s;
-    vector<double> map_waypoints_dx;
-    vector<double> map_waypoints_dy;
+    // The max s value before wrapping around the track back to 0
     double max_s = 6945.554;
+
+    // Load up map values for waypoint's x,y,s and d normalized normal vectors
     // Waypoint map to read from
     string map_file_ = "../data/highway_map.csv";
-    // The max s value before wrapping around the track back to 0
 
-    ifstream in_map_(map_file_.c_str(), ifstream::in);
-
-
-    string line;
-    while (getline(in_map_, line)) {
-        istringstream iss(line);
-        double x;
-        double y;
-        float s;
-        float d_x;
-        float d_y;
-        iss >> x;
-        iss >> y;
-        iss >> s;
-        iss >> d_x;
-        iss >> d_y;
-        map_waypoints_x.push_back(x);
-        map_waypoints_y.push_back(y);
-        map_waypoints_s.push_back(s);
-        map_waypoints_dx.push_back(d_x);
-        map_waypoints_dy.push_back(d_y);
-    }
+    WayPointsMap wayPointsMap;
+    wayPointsMap.init(map_file_);
 
     int lane = 1;//lane 0 is far left, lane 1 is middle and we start with lane 1
     double ref_vel = INITIAL_VEL;
 
-    h.onMessage([&ref_vel, &map_waypoints_x, &map_waypoints_y, &map_waypoints_s, &map_waypoints_dx, &map_waypoints_dy, &lane](
+    h.onMessage([&ref_vel, &wayPointsMap, &lane](
             uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
             uWS::OpCode opCode) {
         // "42" at the start of the message means there's a websocket message event.
@@ -220,12 +197,12 @@ int main() {
                     }
 
                     double double_d = 2 + 4 * lane;
-                    vector<double> next_wp0 = getXY(car_s + 30, double_d, map_waypoints_s, map_waypoints_x,
-                                                    map_waypoints_y);
-                    vector<double> next_wp1 = getXY(car_s + 60, double_d, map_waypoints_s, map_waypoints_x,
-                                                    map_waypoints_y);
-                    vector<double> next_wp2 = getXY(car_s + 90, double_d, map_waypoints_s, map_waypoints_x,
-                                                    map_waypoints_y);
+                    vector<double> next_wp0 = getXY(car_s + 30, double_d, wayPointsMap.map_waypoints_s, wayPointsMap.map_waypoints_x,
+                                                    wayPointsMap.map_waypoints_y);
+                    vector<double> next_wp1 = getXY(car_s + 60, double_d, wayPointsMap.map_waypoints_s, wayPointsMap.map_waypoints_x,
+                                                    wayPointsMap.map_waypoints_y);
+                    vector<double> next_wp2 = getXY(car_s + 90, double_d, wayPointsMap.map_waypoints_s, wayPointsMap.map_waypoints_x,
+                                                    wayPointsMap.map_waypoints_y);
 
                     ptsx.push_back(next_wp0[0]);
                     ptsx.push_back(next_wp1[0]);
