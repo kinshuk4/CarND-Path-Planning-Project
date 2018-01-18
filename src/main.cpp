@@ -197,12 +197,12 @@ int main() {
                     }
 
                     double double_d = 2 + 4 * lane;
-                    vector<double> next_wp0 = getXY(car_s + 30, double_d, wayPointsMap.map_waypoints_s, wayPointsMap.map_waypoints_x,
-                                                    wayPointsMap.map_waypoints_y);
-                    vector<double> next_wp1 = getXY(car_s + 60, double_d, wayPointsMap.map_waypoints_s, wayPointsMap.map_waypoints_x,
-                                                    wayPointsMap.map_waypoints_y);
-                    vector<double> next_wp2 = getXY(car_s + 90, double_d, wayPointsMap.map_waypoints_s, wayPointsMap.map_waypoints_x,
-                                                    wayPointsMap.map_waypoints_y);
+                    vector<double> next_wp0 = getXY(car_s + 30, double_d, wayPointsMap._s, wayPointsMap._x,
+                                                    wayPointsMap._y);
+                    vector<double> next_wp1 = getXY(car_s + 60, double_d, wayPointsMap._s, wayPointsMap._x,
+                                                    wayPointsMap._y);
+                    vector<double> next_wp2 = getXY(car_s + 90, double_d, wayPointsMap._s, wayPointsMap._x,
+                                                    wayPointsMap._y);
 
                     ptsx.push_back(next_wp0[0]);
                     ptsx.push_back(next_wp1[0]);
@@ -268,7 +268,7 @@ int main() {
 //                        double next_s = car_s + (i + 1) * dist_inc;
 //                        double next_d = 6;
 //
-//                        vector<double> xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+//                        vector<double> xy = getXY(next_s, next_d, map_waypoints_s, _x, map_waypoints_y);
 //                        next_x_vals.push_back(xy[0]);
 //                        next_y_vals.push_back(xy[1]);
 //                    }

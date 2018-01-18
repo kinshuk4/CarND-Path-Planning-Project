@@ -11,11 +11,11 @@ using namespace std;
 class WayPointsMap{
 public:
     WayPointsMap();
-    vector<double> map_waypoints_x;
-    vector<double> map_waypoints_y;
-    vector<double> map_waypoints_s;
-    vector<double> map_waypoints_dx;
-    vector<double> map_waypoints_dy;
+    vector<double> _x;
+    vector<double> _y;
+    vector<double> _s;
+    vector<double> _dx;
+    vector<double> _dy;
 
     //Constructors
 
