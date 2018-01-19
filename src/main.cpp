@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "coordinate_utils.h"
 #include "way_points_map.h"
+#include "vehicle.cpp"
 
 using namespace std;
 
@@ -89,7 +90,7 @@ int main() {
                     double end_path_d = j[1]["end_path_d"];
 
                     // Sensor Fusion Data, a list of all other cars on the same side of the road.
-                    auto sensor_fusion = j[1]["sensor_fusion"];
+                    vector<vector<double>> sensor_fusion = j[1]["sensor_fusion"];
 
                     int prev_size = previous_path_x.size();
 
@@ -103,23 +104,17 @@ int main() {
                     bool right_gap_check = false;
 
                     for (int i = 0; i < sensor_fusion.size(); i++) {
-                        float d = sensor_fusion[i][6];
+
+                        VehicleFusionData vehicleFusionData(sensor_fusion[i]);
 
                         // Check the if there is a car in in the same lane
                         int double_d_1 = 2 + 4 * lane;
-                        left_gap_check = (d > double_d_1 - 2);
-                        right_gap_check = (d < double_d_1 + 2);
+                        left_gap_check = (vehicleFusionData.d > double_d_1 - 2);
+                        right_gap_check = (vehicleFusionData.d < double_d_1 + 2);
+
                         if (right_gap_check && left_gap_check) {
-                            // Get car velocity
-                            double vx = sensor_fusion[i][3];
-                            double vy = sensor_fusion[i][4];
-                            double check_speed = sqrt(vx * vx + vy * vy);//get magnitude of velocity i.e. speed
-
-                            // Check the s value of the car in the same lane - how close is the car?
-                            double check_car_s = sensor_fusion[i][5];
-
                             //project s value in time using prev path points assuming constant speed
-                            check_car_s += double(prev_size) * 0.02 * check_speed;
+                            double check_car_s = vehicleFusionData.check_car_s + double(prev_size) * 0.02 * vehicleFusionData.check_speed;
 
                             // Check if this car is in front and too close to us using previous values
                             if ((check_car_s > car_s) && ((check_car_s - end_path_s) < SAFETY_MARGIN)) {
