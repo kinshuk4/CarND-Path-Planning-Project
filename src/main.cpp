@@ -12,7 +12,8 @@
 #include "coordinate_utils.h"
 #include "way_points_map.h"
 #include "vehicle.h"
-
+#include "VehicleController.h"
+#include "VehicleAction.h"
 using namespace std;
 
 // for convenience
@@ -102,56 +103,14 @@ int main() {
                     bool too_close = false;
                     bool left_gap_check = false;
                     bool right_gap_check = false;
+                    VehicleController vehicleController(sensor_fusion, wayPointsMap, lane);
+                    too_close = vehicleController.is_too_close(prev_size, car_s, end_path_s);
+                    cout << too_close << endl;
 
-                    for (int i = 0; i < sensor_fusion.size(); i++) {
+                    VehicleAction vehicleAction = vehicleController.take_vehicle_action(ref_vel, too_close, prev_size, car_s);
 
-                        VehicleFusionData vehicleFusionData(sensor_fusion[i]);
-
-                        // Check the if there is a car in in the same lane
-                        int double_d_1 = 2 + 4 * lane;
-                        left_gap_check = (vehicleFusionData.d > double_d_1 - 2);
-                        right_gap_check = (vehicleFusionData.d < double_d_1 + 2);
-
-                        if (vehicleFusionData.is_in_lane(lane)) {
-
-                            double check_car_s = vehicleFusionData.check_car_s_projection(prev_size);
-
-                            too_close = vehicleFusionData.is_too_close(prev_size, car_s, end_path_s);
-
-                            if(too_close){
-                                break;
-                            }
-                        }
-                    }
-
-                    LaneDecision laneDecision = KEEP_LANE;
-
-                    if(too_close) {
-
-                        //only when too close we have to change the lane
-                        //first try to see if can go right
-                        if( !(!right_gap_check || lane==MAX_LANE)){
-                            laneDecision = TAKE_RIGHT;
-                        }else if( !(!left_gap_check || lane==MIN_LANE)){
-                            laneDecision = TAKE_LEFT;
-                        }
-
-                        switch(laneDecision){
-                            case KEEP_LANE:
-                                ref_vel -= ACCELERATION;
-                                break;
-                            case TAKE_RIGHT:
-                                lane = lane + 1;
-                                break;
-                            case TAKE_LEFT:
-                                lane = lane - 1;
-                                break;
-                        }
-
-                    }
-                    else if(ref_vel < MAX_VEL) {
-                        ref_vel += ACCELERATION;
-                    }
+                    ref_vel = vehicleAction.ref_vel;
+                    lane = vehicleAction.lane;
 
                     json msgJson;
 
@@ -212,11 +171,11 @@ int main() {
                     }
 
                     tk::spline s;
-                    for (int i = 0; i < ptsx.size(); ++i)
-                        std::cout << ptsx[i] << ' ';
-                    cout << endl;
-                    for (int i = 0; i < ptsy.size(); ++i)
-                        std::cout << ptsy[i] << ' ';
+//                    for (int i = 0; i < ptsx.size(); ++i)
+//                        std::cout << ptsx[i] << ' ';
+//                    cout << endl;
+//                    for (int i = 0; i < ptsy.size(); ++i)
+//                        std::cout << ptsy[i] << ' ';
                     s.set_points(ptsx, ptsy);
                     cout << endl << endl;
 
