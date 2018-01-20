@@ -1,34 +1,27 @@
 //
 // Created by Kinshuk Chandra on 23.01.18.
 //
-#include <vector>
-#include <math.h>
+#include "vehicle.h"
+#include "constants.h"
 
-using namespace std;
-struct VehicleFusionData
-{
-    double x, y;
-    double d;
-    double check_car_s;
-    double vx, vy;
-    double check_speed;
-    double yaw;
-    VehicleFusionData(vector<double> vec)
-    {
-        this -> d = vec[6];
+bool VehicleFusionData::is_in_lane(int lane) const {
+    double d = this->d;
+    return (d < (2 + LANE_WIDTH * lane + 2) && d > (2 + LANE_WIDTH * lane - 2));
+}
 
-        this -> x = vec[1];
-        this -> y = vec[2];
+double VehicleFusionData::check_car_s_projection(int prev_size) const {
+    //project s value in time using prev path points assuming constant speed
+    double check_car_s = this->check_car_s + double(prev_size) * 0.02 * this->check_speed;
+    return check_car_s;
+}
 
-        // Get car velocity
-        this -> vx = vec[3];
-        this -> vy = vec[4];
-        this -> check_speed = sqrt(vx*vx + vy*vy);//get magnitude of velocity i.e. speed
-
-        // Check the s value of the car in the same lane - how close is the car?
-        this -> check_car_s = vec[5];
-
-
-        this -> yaw = atan2(vy, vx);
+bool VehicleFusionData::is_too_close(int prev_size, double car_s, double end_path_s) const {
+    bool too_close = false;
+    double check_car_s_proj = check_car_s_projection(prev_size);
+    // Check if this car is in front and too close to us using previous values
+    if ((check_car_s_proj > car_s) && ((check_car_s_proj - end_path_s) < SAFETY_MARGIN)) {
+        too_close = true; // The car in front is dangerously close
     }
-};
+
+    return too_close;
+}

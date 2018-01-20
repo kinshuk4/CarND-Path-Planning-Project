@@ -11,7 +11,7 @@
 #include "constants.h"
 #include "coordinate_utils.h"
 #include "way_points_map.h"
-#include "vehicle.cpp"
+#include "vehicle.h"
 
 using namespace std;
 
@@ -112,18 +112,14 @@ int main() {
                         left_gap_check = (vehicleFusionData.d > double_d_1 - 2);
                         right_gap_check = (vehicleFusionData.d < double_d_1 + 2);
 
-                        if (right_gap_check && left_gap_check) {
-                            //project s value in time using prev path points assuming constant speed
-                            double check_car_s = vehicleFusionData.check_car_s + double(prev_size) * 0.02 * vehicleFusionData.check_speed;
+                        if (vehicleFusionData.is_in_lane(lane)) {
 
-                            // Check if this car is in front and too close to us using previous values
-                            if ((check_car_s > car_s) && ((check_car_s - end_path_s) < SAFETY_MARGIN)) {
-                                //ref_vel = 29.5;//mph - reduce the speed
-                                too_close = true; // The car in front is dangerously close
-                                //change to left lane when some car is infront - risky
-//                                if(lane > 0){
-//                                    lane = 0;
-//                                }
+                            double check_car_s = vehicleFusionData.check_car_s_projection(prev_size);
+
+                            too_close = vehicleFusionData.is_too_close(prev_size, car_s, end_path_s);
+
+                            if(too_close){
+                                break;
                             }
                         }
                     }
