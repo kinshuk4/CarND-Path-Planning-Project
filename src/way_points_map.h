@@ -23,6 +23,6 @@ public:
                  const vector<double> &map_waypoints_s, const vector<double> &map_waypoints_dx,
                  const vector<double> &map_waypoints_dy);
 
-    void init(const string map_file_);
+    void init(const string map_file_, const double max_s);
 };
 #endif //PATH_PLANNING_WAY_POINTS_MAP_H

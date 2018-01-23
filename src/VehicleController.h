@@ -10,10 +10,9 @@
 
 class VehicleController {
     vector<vector<double>> sensor_fusion;
-    WayPointsMap wayPointsMap;
     int lane;
 public:
-    VehicleController(vector<vector<double>> sensor_fusion, WayPointsMap wayPointsMap, int lane);
+    VehicleController(vector<vector<double>> sensor_fusion, int lane);
 
     bool is_too_close(int prev_size, double car_s, double end_path_s) const;
 

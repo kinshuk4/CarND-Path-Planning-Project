@@ -22,10 +22,9 @@ bool VehicleController::is_too_close(int prev_size, double car_s, double end_pat
     return false;
 }
 
-VehicleController::VehicleController(vector<vector<double>> sensor_fusion, WayPointsMap wayPointsMap, int lane) {
-    sensor_fusion = sensor_fusion;
-    wayPointsMap = wayPointsMap;
-    lane = lane;
+VehicleController::VehicleController(vector<vector<double>> sensor_fusion, int lane) {
+    this->sensor_fusion = sensor_fusion;
+    this->lane = lane;
 }
 
 //almost same as is_to_close but here we are using lane from method argument
@@ -63,7 +62,7 @@ VehicleAction VehicleController::take_vehicle_action(double ref_vel, bool too_cl
         } else if (curr_lane != MAX_LANE && is_lane_available(prev_size, car_s, curr_lane + 1)){
             return VehicleAction(ref_vel, curr_lane+1);
         }else{
-            ref_vel -= ACCELERATION;
+            ref_vel -= 2*ACCELERATION;
             return VehicleAction(ref_vel, curr_lane);
         }
 

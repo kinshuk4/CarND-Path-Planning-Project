@@ -18,7 +18,7 @@ WayPointsMap::WayPointsMap(const vector<double> &map_waypoints_x, const vector<d
                                                                      _dx(map_waypoints_dx),
                                                                      _dy(map_waypoints_dy) {}
 
-void WayPointsMap::init(const string map_file_) {
+void WayPointsMap::init(const string map_file_, const double max_s) {
     // The max s value before wrapping around the track back to 0
 
     ifstream in_map_(map_file_.c_str(), ifstream::in);

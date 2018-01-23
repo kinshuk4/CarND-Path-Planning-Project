@@ -49,7 +49,7 @@ int main() {
     string map_file_ = "../data/highway_map.csv";
 
     WayPointsMap wayPointsMap;
-    wayPointsMap.init(map_file_);
+    wayPointsMap.init(map_file_, max_s);
 
     int lane = 1;//lane 0 is far left, lane 1 is middle and we start with lane 1
     double ref_vel = INITIAL_VEL;
@@ -103,9 +103,10 @@ int main() {
                     bool too_close = false;
                     bool left_gap_check = false;
                     bool right_gap_check = false;
-                    VehicleController vehicleController(sensor_fusion, wayPointsMap, lane);
+                    VehicleController vehicleController(sensor_fusion, lane);
                     too_close = vehicleController.is_too_close(prev_size, car_s, end_path_s);
-                    cout << too_close << endl;
+                    cout << too_close << " "<< lane << endl;
+
 
                     VehicleAction vehicleAction = vehicleController.take_vehicle_action(ref_vel, too_close, prev_size, car_s);
 
